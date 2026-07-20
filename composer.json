@@ -1,0 +1,9 @@
+{
+    "name": "univasf/projeto-mvc",
+    "description": "Estrutura MVC e Sistema de Rotas",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}
