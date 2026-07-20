@@ -6,7 +6,13 @@
 </head>
 <body>
     <h1><?= $titulo ?></h1>
-    <p>Esta é a camada de View responsável por exibir a lista de usuários.</p>
+
+    <ul>
+        <?php foreach ($usuarios as $usuario): ?>
+            <li><?= $usuario->getNome() ?> - <?= $usuario->getEmail() ?></li>
+        <?php endforeach; ?>
+    </ul>
+
     <a href="/">Voltar para a Home</a>
 </body>
 </html>
