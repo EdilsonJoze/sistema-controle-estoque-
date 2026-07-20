@@ -2,10 +2,16 @@
 
 namespace App\Controllers;
 
+use App\Models\Usuario;
+
 class UsuarioController {
     public function index(): void {
+        // Busca os dados da camada Model
+        $usuarios = Usuario::all();
+
         $data = [
-            'titulo' => 'Listagem de Usuários'
+            'titulo' => 'Listagem de Usuários',
+            'usuarios' => $usuarios
         ];
 
         extract($data);
