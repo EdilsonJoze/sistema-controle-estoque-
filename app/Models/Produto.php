@@ -12,35 +12,67 @@ class Produto {
         $this->db = Database::getConnection();
     }
 
-    /**
-     * Read: Recupera a lista completa de produtos
-     */
     public function listar(): array {
-        $sql = "SELECT p.*, f.nome as fornecedor_nome 
-                FROM produtos p 
-                LEFT JOIN fornecedores f ON p.fornecedor_id = f.id 
-                ORDER BY p.id DESC";
-        $stmt = $this->db->query($sql);
-        return $stmt->fetchAll();
+        $sql = "SELECT * FROM produtos ORDER BY id DESC";
+        return $this->db->query($sql)->fetchAll();
     }
 
     /**
-     * Create: Insere um novo produto na base de dados
+     * Read (Por ID): Recupera um único produto para edição
      */
-    public function criar(array $dados): bool {
-        $sql = "INSERT INTO produtos (nome, preco_custo, preco_venda, estoque_atual, estoque_minimo, imagem_url, fornecedor_id) 
-                VALUES (:nome, :preco_custo, :preco_venda, :estoque_atual, :estoque_minimo, :imagem_url, :fornecedor_id)";
-
+    public function buscarPorId(int $id): ?array {
+        $sql = "SELECT * FROM produtos WHERE id = :id";
         $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        $produto = $stmt->fetch();
+        return $produto ?: null;
+    }
 
+    public function criar(array $dados): bool {
+        $sql = "INSERT INTO produtos (nome, preco_custo, preco_venda, estoque_atual, estoque_minimo, imagem_url) 
+                VALUES (:nome, :preco_custo, :preco_venda, :estoque_atual, :estoque_minimo, :imagem_url)";
+        $stmt = $this->db->prepare($sql);
         return $stmt->execute([
-            ':nome'          => $dados['nome'],
+            ':nome'           => $dados['nome'],
             ':preco_custo'   => $dados['preco_custo'],
             ':preco_venda'   => $dados['preco_venda'],
             ':estoque_atual' => $dados['estoque_atual'],
             ':estoque_minimo' => $dados['estoque_minimo'],
-            ':imagem_url'     => $dados['imagem_url'],
-            ':fornecedor_id' => $dados['fornecedor_id']
+            ':imagem_url'     => $dados['imagem_url']
         ]);
+    }
+
+    /**
+     * Update: Atualiza os dados de um produto existente
+     */
+    public function atualizar(int $id, array $dados): bool {
+        $sql = "UPDATE produtos 
+                SET nome = :nome, 
+                    preco_custo = :preco_custo, 
+                    preco_venda = :preco_venda, 
+                    estoque_atual = :estoque_atual, 
+                    estoque_minimo = :estoque_minimo, 
+                    imagem_url = :imagem_url 
+                WHERE id = :id";
+        
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':id'             => $id,
+            ':nome'           => $dados['nome'],
+            ':preco_custo'   => $dados['preco_custo'],
+            ':preco_venda'   => $dados['preco_venda'],
+            ':estoque_atual' => $dados['estoque_atual'],
+            ':estoque_minimo' => $dados['estoque_minimo'],
+            ':imagem_url'     => $dados['imagem_url']
+        ]);
+    }
+
+    /**
+     * Delete: Exclui um registro da base de dados
+     */
+    public function deletar(int $id): bool {
+        $sql = "DELETE FROM produtos WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([':id' => $id]);
     }
 }
