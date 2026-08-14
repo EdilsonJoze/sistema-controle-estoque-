@@ -1,11 +1,28 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Lista de Produtos</title>
+    <title>Gerenciamento de Produtos</title>
 </head>
 <body>
     <h1>Produtos Cadastrados</h1>
+
+    <!-- Mensagens de Feedback -->
+    <?php if (isset($_SESSION['mensagem_sucesso'])): ?>
+        <p style="color: green; font-weight: bold;">
+            <?= $_SESSION['mensagem_sucesso']; unset($_SESSION['mensagem_sucesso']); ?>
+        </p>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['mensagem_erro'])): ?>
+        <p style="color: red; font-weight: bold;">
+            <?= $_SESSION['mensagem_erro']; unset($_SESSION['mensagem_erro']); ?>
+        </p>
+    <?php endif; ?>
+
     <a href="/produtos/cadastrar">+ Novo Produto</a>
     <br><br>
 
@@ -15,8 +32,8 @@
                 <th>Imagem</th>
                 <th>Nome</th>
                 <th>Preço Venda</th>
-                <th>Estoque Atual</th>
-                <th>Estoque Mínimo</th>
+                <th>Estoque</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -32,7 +49,15 @@
                     <td><?= htmlspecialchars($p['nome']) ?></td>
                     <td>R$ <?= number_format($p['preco_venda'], 2, ',', '.') ?></td>
                     <td><?= $p['estoque_atual'] ?></td>
-                    <td><?= $p['estoque_minimo'] ?></td>
+                    <td>
+                        <a href="/produtos/editar?id=<?= $p['id'] ?>">Editar</a> | 
+                        
+                        <!-- Form para exclusão via POST com confirmação JavaScript -->
+                        <form action="/produtos/deletar" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir este produto?');">
+                            <input type="hidden" name="id" value="<?= $p['id'] ?>">
+                            <button type="submit" style="color:red; background:none; border:none; cursor:pointer; text-decoration:underline;">Excluir</button>
+                        </form>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
